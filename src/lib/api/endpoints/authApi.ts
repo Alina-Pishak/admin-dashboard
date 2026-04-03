@@ -5,14 +5,14 @@ const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: (body) => ({
-        url: "/auth/login",
+        url: "/users/login",
         method: "POST",
         body,
       }),
       invalidatesTags: ["Auth"],
     }),
     getMe: builder.query<User, void>({
-      query: () => "/auth/me",
+      query: () => "/users/user-info",
       providesTags: ["Auth"],
     }),
   }),

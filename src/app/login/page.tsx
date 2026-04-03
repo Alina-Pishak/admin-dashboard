@@ -19,7 +19,7 @@ export default function LoginPage() {
 
     try {
       const response = await login({ email, password }).unwrap();
-      localStorage.setItem("accessToken", response.accessToken);
+      localStorage.setItem("accessToken", response.token);
       router.push("/dashboard");
     } catch {
       setErrorText("Login failed. Check credentials or API connection.");
