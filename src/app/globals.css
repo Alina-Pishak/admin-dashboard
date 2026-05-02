@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+/* E-Pharmacy Admin — tokens з Figma UI Kit (node 1469:383) */
+
+:root {
+  /* Текст */
+  --text-primary: #1d1e21;
+  --text-muted: rgb(29 30 33 / 40%);
+  /* Акцент */
+  --accent: #59b17a;
+  --accent-hover: #3f945f;
+  --accent-muted: rgb(89 177 122 / 10%);
+  --accent-subtle: rgb(89 177 122 / 8%);
+  /* Помилка / небезпека */
+  --danger: #e85050;
+  --danger-muted: rgb(232 80 80 / 10%);
+  /* Поверхні */
+  --surface-page: #f7f8fa;
+  --surface-card: #ffffff;
+  --surface-mint: #e7f1ed;
+  --surface-subtle: #f9f9f9;
+  /* Межі та розділювачі */
+  --border-default: #dcdddf;
+  --border-subtle: rgb(29 30 33 / 10%);
+  --border-strong: rgb(0 0 0 / 10%);
+  /* Статуси (бейджі) */
+  --status-confirmed: #8059e4;
+  --status-confirmed-muted: rgb(128 89 228 / 10%);
+  --status-pending: #f79042;
+  --status-pending-muted: rgb(247 144 66 / 10%);
+  --status-processing: #70a6e8;
+  --status-processing-muted: rgb(112 166 232 / 10%);
+  /* Застарілі імена для сумісності з layout */
+  --background: var(--surface-page);
+  --foreground: var(--text-primary);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--accent);
+  --color-primary-hover: var(--accent-hover);
+  --color-primary-muted: var(--accent-muted);
+  --color-primary-subtle: var(--accent-subtle);
+  --color-danger: var(--danger);
+  --color-danger-muted: var(--danger-muted);
+  --color-muted: var(--text-muted);
+  --color-surface-page: var(--surface-page);
+  --color-surface-card: var(--surface-card);
+  --color-surface-mint: var(--surface-mint);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-border: var(--border-default);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+  --color-status-completed: var(--accent);
+  --color-status-completed-muted: var(--accent-muted);
+  --color-status-confirmed: var(--status-confirmed);
+  --color-status-confirmed-muted: var(--status-confirmed-muted);
+  --color-status-pending: var(--status-pending);
+  --color-status-pending-muted: var(--status-pending-muted);
+  --color-status-cancelled: var(--danger);
+  --color-status-cancelled-muted: var(--danger-muted);
+  --color-status-processing: var(--status-processing);
+  --color-status-processing-muted: var(--status-processing-muted);
+  --font-sans: var(--font-inter);
+}
+
+body {
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
