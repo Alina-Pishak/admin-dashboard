@@ -16,9 +16,9 @@ export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
 
 const variantClass: Record<IconButtonVariant, string> = {
   ghost:
-    "border border-border-subtle bg-transparent text-muted hover:border-primary hover:bg-primary-muted hover:text-primary",
+    "border border-border-subtle bg-transparent text-muted hover:border-primary hover:bg-primary-muted hover:text-primary disabled:pointer-events-none disabled:opacity-40",
   solid:
-    "border border-transparent bg-primary text-white hover:bg-primary-hover hover:text-white",
+    "border border-transparent bg-primary text-white hover:bg-primary-hover hover:text-white disabled:pointer-events-none disabled:opacity-40",
 };
 
 export function IconButton({

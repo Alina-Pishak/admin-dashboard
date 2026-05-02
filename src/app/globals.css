@@ -70,3 +70,19 @@ body {
   color: var(--text-primary);
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
+
+/* Select (Figma 92:2658 — тонкий скролбар у зеленому списку) */
+.select-menu-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 40%) transparent;
+}
+.select-menu-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.select-menu-scroll::-webkit-scrollbar-thumb {
+  background-color: rgb(255 255 255 / 40%);
+  border-radius: 12px;
+}
+.select-menu-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
