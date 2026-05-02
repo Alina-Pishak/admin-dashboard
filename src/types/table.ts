@@ -20,4 +20,33 @@ export type CustomerRow = {
   name: string;
   email: string;
   spent: string;
+  /** Для повного списку клієнтів (сторінка All customers) */
+  address?: string;
+  phone?: string;
+  /** Дата реєстрації, ISO `YYYY-MM-DD` */
+  registerDate?: string;
+};
+
+/** Категорія як value з `PRODUCT_CATEGORY_OPTIONS` (medicine, heart, …) */
+export type ProductRow = {
+  id: string;
+  productInfo: string;
+  category: string;
+  stock: string;
+  suppliers: string;
+  price: string;
+};
+
+/** Статус у списку постачальників (макет All suppliers) */
+export type SupplierListStatus = "active" | "deactive";
+
+export type SupplierRow = {
+  id: string;
+  suppliersInfo: string;
+  address: string;
+  company: string;
+  /** Дата поставки, ISO `YYYY-MM-DD` */
+  deliveryDate: string;
+  amount: string;
+  status: SupplierListStatus;
 };

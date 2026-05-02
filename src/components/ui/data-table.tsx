@@ -11,6 +11,7 @@ import {
   type PaginationState,
 } from "@tanstack/react-table";
 import { Filter } from "lucide-react";
+import type { ReactNode } from "react";
 import { useCallback, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,12 @@ export type DataTableProps<TData> = {
   getGlobalFilterText?: (row: TData) => string;
   /** Після застосування фільтра (кнопка / Enter) */
   onFilterApply?: (query: string) => void;
+  /** Кнопки праворуч від тулбару (напр. «Add a new product») */
+  toolbarEnd?: ReactNode;
+  /** Підпис поля пошуку для a11y */
+  searchAriaLabel?: string;
+  /** Дані для колонок (`table.options.meta`, напр. колбеки дій) */
+  meta?: unknown;
   emptyMessage?: string;
   className?: string;
 };
@@ -47,6 +54,9 @@ export function DataTable<TData>({
   pageSize = 5,
   getGlobalFilterText,
   onFilterApply,
+  toolbarEnd,
+  searchAriaLabel = "Пошук у таблиці",
+  meta,
   emptyMessage = "Немає даних",
   className,
 }: DataTableProps<TData>) {
@@ -82,6 +92,7 @@ export function DataTable<TData>({
   const table = useReactTable({
     data,
     columns,
+    meta: meta as never,
     state: isFull
       ? {
           globalFilter,
@@ -169,30 +180,37 @@ export function DataTable<TData>({
   return (
     <div className={cn("w-full max-w-full", className)}>
       {isFull && (
-        <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
-          <Input
-            placeholder={searchPlaceholder}
-            value={searchDraft}
-            onChange={(e) => setSearchDraft(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                applySearch();
-              }
-            }}
-            className="shadow-[0_-1px_5px_0_rgba(71,71,71,0.05)] md:max-w-56"
-            aria-label="Ім’я замовника для пошуку"
-          />
-          <Button
-            type="button"
-            variant="primary"
-            className="inline-flex shrink-0 gap-2 px-[30px] text-xs md:text-sm"
-            onClick={applySearch}
-            aria-label="Застосувати фільтр за іменем замовника"
-          >
-            <Filter className="size-3.5 text-white" strokeWidth={2} aria-hidden />
-            Filter
-          </Button>
+        <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+            <Input
+              placeholder={searchPlaceholder}
+              value={searchDraft}
+              onChange={(e) => setSearchDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  applySearch();
+                }
+              }}
+              className="shadow-[0_-1px_5px_0_rgba(71,71,71,0.05)] sm:flex-1 md:max-w-56"
+              aria-label={searchAriaLabel}
+            />
+            <Button
+              type="button"
+              variant="primary"
+              className="inline-flex shrink-0 gap-2 px-[30px] text-xs md:text-sm"
+              onClick={applySearch}
+              aria-label="Застосувати фільтр"
+            >
+              <Filter className="size-3.5 text-white" strokeWidth={2} aria-hidden />
+              Filter
+            </Button>
+          </div>
+          {toolbarEnd ? (
+            <div className="flex shrink-0 items-center lg:justify-end">
+              {toolbarEnd}
+            </div>
+          ) : null}
         </div>
       )}
 

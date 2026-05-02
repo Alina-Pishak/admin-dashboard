@@ -1,7 +1,8 @@
 "use client";
 
 import { LogOut, Menu, X } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { IconButton } from "@/components/ui/icon-button";
 import { Logo } from "./logo";
 import { SidebarNav } from "./sidebar-nav";
@@ -22,6 +23,18 @@ export function DashboardShell({
   breadcrumbCurrent = "Dashboard",
   userEmail = "vendor@gmail.com",
 }: DashboardShellProps) {
+  const pathname = usePathname();
+  const breadcrumbCurrentResolved = useMemo(() => {
+    const map: Record<string, string> = {
+      "/": "Dashboard",
+      "/orders": "All orders",
+      "/products": "All products",
+      "/suppliers": "All suppliers",
+      "/customers": "All customers",
+    };
+    return map[pathname] ?? breadcrumbCurrent;
+  }, [pathname, breadcrumbCurrent]);
+
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   useEffect(() => {
@@ -104,7 +117,7 @@ export function DashboardShell({
                 {title}
               </h1>
               <p className="truncate text-xs leading-[18px] text-muted">
-                <span>{breadcrumbCurrent}</span>
+                <span>{breadcrumbCurrentResolved}</span>
                 <span className="mx-2 text-muted">|</span>
                 <span>{userEmail}</span>
               </p>
