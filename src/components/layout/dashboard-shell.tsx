@@ -8,6 +8,7 @@ import { clearStoredToken, getStoredToken } from "@/lib/auth";
 import { IconButton } from "@/components/ui/icon-button";
 import { Logo } from "./logo";
 import { SidebarNav } from "./sidebar-nav";
+import { ThemeToggle } from "./theme-toggle";
 
 type DashboardShellProps = {
   children: ReactNode;
@@ -157,14 +158,17 @@ export function DashboardShell({
             </div>
           </div>
 
-          <IconButton
-            variant="solid"
-            className="shrink-0"
-            aria-label="Вийти"
-            onClick={handleLogout}
-          >
-            <LogOut className="size-5" strokeWidth={1.75} />
-          </IconButton>
+          <div className="flex shrink-0 items-center gap-2">
+            <ThemeToggle />
+            <IconButton
+              variant="solid"
+              className="shrink-0"
+              aria-label="Вийти"
+              onClick={handleLogout}
+            >
+              <LogOut className="size-5" strokeWidth={1.75} />
+            </IconButton>
+          </div>
         </header>
 
         <main className="flex-1 px-4 py-6 md:px-8 md:py-8">{children}</main>

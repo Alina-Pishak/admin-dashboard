@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { LoginForm } from "./login-form";
 import { Logo } from "@/components/layout/logo";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
 
 /**
@@ -17,6 +18,9 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <div className="relative min-h-full flex-1 overflow-hidden bg-surface-page">
+      <div className="absolute right-5 top-6 z-20 sm:right-8 md:right-10 lg:right-[100px] lg:top-7">
+        <ThemeToggle />
+      </div>
       <div className="relative z-10 mx-auto flex min-h-full w-full max-w-[1280px] flex-col px-5 pb-16 pt-6 sm:px-8 md:px-10 lg:min-h-screen lg:px-[100px] lg:pb-24 lg:pt-7">
         <Link
           href="/"

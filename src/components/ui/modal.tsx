@@ -81,7 +81,7 @@ export function Modal({
   return createPortal(
     <div className={cn("fixed inset-0 z-50", className)} role="presentation">
       <div
-        className="absolute inset-0 bg-[rgb(29_30_33_/45%)]"
+        className="absolute inset-0 bg-[color:var(--overlay-scrim)]"
         aria-hidden
         onPointerDown={() => {
           if (closeOnBackdropClick && !closeDisabled) onClose();
@@ -91,7 +91,7 @@ export function Modal({
         <div className="pointer-events-auto relative w-full max-w-[min(100%,335px)] sm:max-w-[min(100%,536px)]">
           <div
             className={cn(
-              "bg-surface-card shadow-[0_8px_40px_rgb(29_30_33_/12%)]",
+              "bg-surface-card shadow-[var(--shadow-elevated)]",
               "flex max-h-[min(100dvh-2rem,900px)] min-h-0 w-full flex-col overflow-hidden rounded-[12px]",
               "outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
               "sm:max-h-[min(100dvh-3rem,900px)]",

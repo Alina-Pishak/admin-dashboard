@@ -11,9 +11,9 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClass: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary text-white hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 disabled:pointer-events-none disabled:bg-[rgb(29_30_33_/10%)] disabled:text-muted",
+    "bg-primary text-white hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 disabled:pointer-events-none disabled:bg-overlay-muted disabled:text-muted",
   outline:
-    "border border-primary border-solid bg-surface-card text-primary hover:bg-primary-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 disabled:pointer-events-none disabled:border-transparent disabled:bg-[rgb(29_30_33_/10%)] disabled:text-muted disabled:hover:bg-[rgb(29_30_33_/10%)]",
+    "border border-primary border-solid bg-surface-card text-primary hover:bg-primary-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 disabled:pointer-events-none disabled:border-transparent disabled:bg-overlay-muted disabled:text-muted disabled:hover:bg-overlay-muted",
 };
 
 export function Button({

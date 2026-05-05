@@ -108,8 +108,8 @@ export function ProductFormModal({
             className={cn(
               "inline-flex min-h-11 min-w-[133px] items-center justify-center rounded-full px-10 py-[13px]",
               "text-xs font-medium leading-[18px] text-muted md:text-sm",
-              "bg-[rgb(29_30_33_/10%)] transition-colors",
-              "hover:bg-[rgb(29_30_33_/15%)]",
+              "bg-overlay-muted transition-colors",
+              "hover:bg-overlay-muted-hover",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25",
             )}
           >

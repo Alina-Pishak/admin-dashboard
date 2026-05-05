@@ -336,7 +336,7 @@ export function DateInput({
         aria-label={ariaLabel}
         className={cn(
           "box-border flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded-full border border-border-subtle bg-surface-card px-[18px] py-[13px] text-left text-xs leading-[18px]",
-          displayText ? "text-[rgb(29_30_33_/80%)]" : "text-muted",
+          displayText ? "text-foreground/80" : "text-muted",
           "transition-[color,box-shadow,border-color]",
           "focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15",
           "disabled:cursor-not-allowed disabled:opacity-60"

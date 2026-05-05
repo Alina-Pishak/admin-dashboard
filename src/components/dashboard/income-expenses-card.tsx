@@ -30,7 +30,7 @@ function KindPill({ kind }: { kind: LedgerRow["kind"] }) {
     <span
       className={cn(
         "inline-flex min-w-[80px] justify-center rounded-[40px] px-1 py-1",
-        "bg-[rgb(29_30_33_/10%)] text-sm font-medium tracking-[-0.7px] text-foreground"
+        "bg-overlay-muted text-sm font-medium tracking-[-0.7px] text-foreground"
       )}
     >
       Error

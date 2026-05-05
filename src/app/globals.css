@@ -3,6 +3,7 @@
 /* E-Pharmacy Admin — tokens з Figma UI Kit (node 1469:383) */
 
 :root {
+  color-scheme: light;
   /* Текст */
   --text-primary: #1d1e21;
   --text-muted: rgb(29 30 33 / 40%);
@@ -33,6 +34,42 @@
   /* Застарілі імена для сумісності з layout */
   --background: var(--surface-page);
   --foreground: var(--text-primary);
+  /* Натиски / disabled / скрим модалок */
+  --overlay-muted: rgb(29 30 33 / 10%);
+  --overlay-muted-hover: rgb(29 30 33 / 15%);
+  --overlay-scrim: rgb(29 30 33 / 45%);
+  --shadow-elevated: 0 8px 40px rgb(29 30 33 / 12%);
+}
+
+html.dark {
+  color-scheme: dark;
+  --text-primary: #e9ecf1;
+  --text-muted: rgb(233 236 244 / 48%);
+  --accent: #6cbd8a;
+  --accent-hover: #52a673;
+  --accent-muted: rgb(108 189 138 / 14%);
+  --accent-subtle: rgb(108 189 138 / 10%);
+  --danger: #f07171;
+  --danger-muted: rgb(240 113 113 / 14%);
+  --surface-page: #0e1014;
+  --surface-card: #171a20;
+  --surface-mint: #141f1a;
+  --surface-subtle: #1f232b;
+  --border-default: #343942;
+  --border-subtle: rgb(255 255 255 / 10%);
+  --border-strong: rgb(255 255 255 / 14%);
+  --status-confirmed: #9b7eed;
+  --status-confirmed-muted: rgb(155 126 237 / 14%);
+  --status-pending: #ffb366;
+  --status-pending-muted: rgb(255 179 102 / 14%);
+  --status-processing: #8bbef5;
+  --status-processing-muted: rgb(139 190 245 / 14%);
+  --background: var(--surface-page);
+  --foreground: var(--text-primary);
+  --overlay-muted: rgb(255 255 255 / 10%);
+  --overlay-muted-hover: rgb(255 255 255 / 15%);
+  --overlay-scrim: rgb(0 0 0 / 72%);
+  --shadow-elevated: 0 12px 48px rgb(0 0 0 / 55%);
 }
 
 @theme inline {
@@ -62,6 +99,8 @@
   --color-status-cancelled-muted: var(--danger-muted);
   --color-status-processing: var(--status-processing);
   --color-status-processing-muted: var(--status-processing-muted);
+  --color-overlay-muted: var(--overlay-muted);
+  --color-overlay-muted-hover: var(--overlay-muted-hover);
   --font-sans: var(--font-inter);
 }
 

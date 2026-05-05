@@ -264,9 +264,7 @@ export function Select({
         className={cn(
           "flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded-full border bg-surface-card px-[18px] text-left text-xs leading-[18px]",
           triggerVariantClass[triggerVariant],
-          selectedLabel
-            ? "text-[rgb(29_30_33_/80%)]"
-            : "text-muted",
+          selectedLabel ? "text-foreground/80" : "text-muted",
           "transition-[border-color,box-shadow,color]",
           "focus:outline-none focus:ring-2",
           "disabled:cursor-not-allowed disabled:opacity-60"
