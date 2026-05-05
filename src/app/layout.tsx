@@ -23,6 +23,10 @@ export const metadata: Metadata = {
     "Панель керування E-Pharmacy: товари, постачальники, клієнти та замовлення.",
   applicationName: "E-Pharmacy Admin",
   authors: [{ name: "E-Pharmacy" }],
+  icons: {
+    icon: "/logo.svg",
+    apple: "/logo.svg",
+  },
   openGraph: {
     type: "website",
     locale: "uk_UA",
@@ -31,12 +35,21 @@ export const metadata: Metadata = {
     title: "E-Pharmacy Admin",
     description:
       "Панель керування E-Pharmacy: товари, постачальники, клієнти та замовлення.",
+    images: [
+      {
+        url: "/logo.svg",
+        width: 512,
+        height: 512,
+        alt: "E-Pharmacy",
+      },
+    ],
   },
   twitter: {
     card: "summary",
     title: "E-Pharmacy Admin",
     description:
       "Панель керування E-Pharmacy: товари, постачальники, клієнти та замовлення.",
+    images: ["/logo.svg"],
   },
   /** Адмінку зазвичай не індексують у пошуку */
   robots: {
