@@ -4,7 +4,11 @@ import { LogOut, Menu, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { getUserInfoRequest, logoutUserRequest } from "@/lib/api";
-import { clearStoredToken, getStoredToken } from "@/lib/auth";
+import {
+  clearAuthSessionCookie,
+  clearStoredToken,
+  getStoredToken,
+} from "@/lib/auth";
 import { IconButton } from "@/components/ui/icon-button";
 import { Logo } from "./logo";
 import { SidebarNav } from "./sidebar-nav";
@@ -75,6 +79,7 @@ export function DashboardShell({
         }
       }
       clearStoredToken();
+      await clearAuthSessionCookie();
       router.push("/login");
       router.refresh();
     })();

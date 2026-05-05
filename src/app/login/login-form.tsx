@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginUserRequest } from "@/lib/api";
-import { setStoredToken } from "@/lib/auth";
+import { setStoredToken, syncAuthSessionCookie } from "@/lib/auth";
 import { loginSchema } from "@/lib/validation";
 import { Button, Input, PasswordInput } from "@/components/ui";
 
@@ -44,6 +44,7 @@ export function LoginForm() {
             : "";
       if (!access) throw new Error("No access token in response");
       setStoredToken(access);
+      await syncAuthSessionCookie(access);
       router.push("/");
       router.refresh();
     } catch (err) {

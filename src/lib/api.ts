@@ -9,7 +9,12 @@ import type {
   SupplierListStatus,
   SupplierRow,
 } from "@/types/table";
-import { clearStoredToken, setStoredToken } from "@/lib/auth";
+import {
+  clearAuthSessionCookie,
+  clearStoredToken,
+  setStoredToken,
+  syncAuthSessionCookie,
+} from "@/lib/auth";
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -40,7 +45,10 @@ function refreshAccessToken(): Promise<string | null> {
             : typeof body?.accessToken === "string"
               ? body.accessToken
               : null;
-        if (next) setStoredToken(next);
+        if (next) {
+          setStoredToken(next);
+          void syncAuthSessionCookie(next);
+        }
         return next;
       } finally {
         refreshInFlight = null;
@@ -129,6 +137,7 @@ async function apiFetch<T>(path: string, options: RequestOptions = {}) {
       payload = await response.json().catch(() => null);
     } else {
       clearStoredToken();
+      void clearAuthSessionCookie();
     }
   }
 
