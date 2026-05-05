@@ -136,7 +136,7 @@ export function DashboardShell({
         </div>
       </div>
 
-      <div className="flex min-h-full flex-1 flex-col md:pl-20">
+      <div className="flex min-h-full min-w-0 flex-1 flex-col md:pl-20">
         <header className="sticky top-0 z-20 flex min-h-20 shrink-0 items-center gap-3 border-b border-border-subtle bg-surface-page px-4 py-3 md:px-8 md:py-0">
           <IconButton
             variant="ghost"
@@ -176,7 +176,9 @@ export function DashboardShell({
           </div>
         </header>
 
-        <main className="flex-1 px-4 py-6 md:px-8 md:py-8">{children}</main>
+        <main className="min-w-0 flex-1 px-4 py-6 md:px-8 md:py-8">
+          {children}
+        </main>
       </div>
     </div>
   );

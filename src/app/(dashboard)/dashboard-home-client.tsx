@@ -40,7 +40,7 @@ export function DashboardHomeClient() {
   }, []);
 
   return (
-    <div className="relative mx-auto w-full max-w-[1280px] space-y-4 md:space-y-6">
+    <div className="relative mx-auto w-full min-w-0 max-w-[1280px] space-y-4 md:space-y-6">
       {loading ? (
         <div
           className="absolute inset-0 z-10 flex min-h-[320px] items-center justify-center rounded-lg bg-surface-page/75 backdrop-blur-[2px] md:min-h-[380px]"
@@ -61,7 +61,7 @@ export function DashboardHomeClient() {
         )}
       >
         <StatSummaryCards summary={dashboard?.summary} />
-        <div className="grid grid-cols-1 gap-4 mt-5 md:mt-10 lg:grid-cols-2 lg:items-start lg:gap-5">
+        <div className="mt-5 grid min-w-0 grid-cols-1 gap-4 md:mt-10 lg:grid-cols-2 lg:items-start lg:gap-5 [&>*]:min-w-0">
           <RecentCustomersTable
             data={
               dashboard?.lastClients

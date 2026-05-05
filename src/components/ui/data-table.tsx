@@ -114,7 +114,7 @@ export function DataTable<TData>({
   const rows = table.getRowModel().rows;
   const pageCount = table.getPageCount();
 
-  const headerPadding = "px-[13px] py-3 md:px-5";
+  const headerPadding = "px-3 py-2.5 sm:px-[13px] sm:py-3 md:px-5";
   const cellText = "text-xs md:text-base";
   const headerText =
     "text-left text-xs font-medium text-muted md:text-sm [&:last-child]:pr-5";
@@ -122,7 +122,7 @@ export function DataTable<TData>({
     "border-r border-border-subtle last:border-r-0";
 
   const tableInner = (
-    <table className="w-full min-w-[640px] border-collapse caption-bottom">
+    <table className="w-full min-w-[680px] border-collapse caption-bottom">
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr
@@ -182,7 +182,7 @@ export function DataTable<TData>({
   );
 
   return (
-    <div className={cn("w-full max-w-full", className)}>
+    <div className={cn("w-full min-w-0 max-w-full", className)}>
       {isFull && (
         <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
@@ -218,11 +218,11 @@ export function DataTable<TData>({
         </div>
       )}
 
-      <div className="relative overflow-hidden rounded-lg border border-border-subtle bg-surface-card shadow-[0_-1px_5px_0_rgba(71,71,71,0.05)]">
+      <div className="relative rounded-lg border border-border-subtle bg-surface-card shadow-[0_-1px_5px_0_rgba(71,71,71,0.05)]">
         {isLoading ? <TableLoadingOverlay /> : null}
         <div
           className={cn(
-            "flex items-center bg-surface-mint px-[13px] py-3 md:min-h-16 md:px-5",
+            "flex items-center rounded-t-lg bg-surface-mint px-3 py-3 sm:px-[13px] md:min-h-16 md:px-5",
             "min-h-12 md:py-0",
             isLoading && "pointer-events-none opacity-60",
           )}
@@ -232,8 +232,10 @@ export function DataTable<TData>({
           </h2>
         </div>
         <div
+          role="region"
+          aria-label="Таблиця: прокрутіть горизонтально на вузькому екрані"
           className={cn(
-            "overflow-x-auto",
+            "min-w-0 overflow-x-auto overscroll-x-contain scroll-smooth rounded-b-lg touch-pan-x",
             isLoading && "pointer-events-none opacity-60",
           )}
         >
@@ -243,7 +245,7 @@ export function DataTable<TData>({
 
       {isFull && pageCount > 1 && (
         <div
-          className="flex justify-center gap-2 pt-4"
+          className="flex min-w-0 flex-wrap justify-center gap-2 pt-4"
           role="navigation"
           aria-label="Сторінки"
         >

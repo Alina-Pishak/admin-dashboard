@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function ProductsPage() {
   return (
-    <div className="mx-auto w-full max-w-[1280px]">
+    <div className="mx-auto w-full min-w-0 max-w-[1280px]">
       <ProductsTable />
     </div>
   );
