@@ -30,7 +30,7 @@ export type CustomerRow = {
 /** Категорія як value з `PRODUCT_CATEGORY_OPTIONS` (medicine, heart, …) */
 export type ProductRow = {
   id: string;
-  productInfo: string;
+  name: string;
   category: string;
   stock: string;
   suppliers: string;
@@ -42,7 +42,7 @@ export type SupplierListStatus = "active" | "deactive";
 
 export type SupplierRow = {
   id: string;
-  suppliersInfo: string;
+  name: string;
   address: string;
   company: string;
   /** Дата поставки, ISO `YYYY-MM-DD` */

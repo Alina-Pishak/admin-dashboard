@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Button,
   DateInput,
@@ -9,6 +10,7 @@ import {
   Select,
   type SelectOption,
 } from "@/components/ui";
+import { supplierFormSchema } from "@/lib/validation";
 import { cn } from "@/lib/utils";
 
 /**
@@ -17,7 +19,7 @@ import { cn } from "@/lib/utils";
  * [мобайл 92:4557](https://www.figma.com/design/RRrBndFgQLZ96QH3awLwCI/Admin-dashboard--Copy-?node-id=92-4557).
  */
 export type SupplierFormValues = {
-  suppliersInfo: string;
+  name: string;
   address: string;
   company: string;
   deliveryDate: string;
@@ -33,7 +35,7 @@ export const SUPPLIER_STATUS_OPTIONS: SelectOption[] = [
 ];
 
 const EMPTY: SupplierFormValues = {
-  suppliersInfo: "",
+  name: "",
   address: "",
   company: "",
   deliveryDate: "",
@@ -65,7 +67,7 @@ export type SupplierFormModalProps = {
   onClose: () => void;
   mode: SupplierFormMode;
   defaultValues?: Partial<SupplierFormValues>;
-  onSubmit?: (values: SupplierFormValues) => void;
+  onSubmit?: (values: SupplierFormValues) => void | Promise<void>;
 };
 
 export function SupplierFormModal({
@@ -75,17 +77,18 @@ export function SupplierFormModal({
   defaultValues,
   onSubmit,
 }: SupplierFormModalProps) {
-  const [form, setForm] = useState<SupplierFormValues>(() =>
-    mergeDefaults(defaultValues)
-  );
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SupplierFormValues>({
+    resolver: yupResolver(supplierFormSchema),
+    defaultValues: mergeDefaults(defaultValues),
+  });
 
-  const patch = useCallback((key: keyof SupplierFormValues, value: string) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
-  }, []);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit?.(form);
+  const submit = async (values: SupplierFormValues) => {
+    await onSubmit?.(values);
     onClose();
   };
 
@@ -112,7 +115,7 @@ export function SupplierFormModal({
               "text-xs font-medium leading-[18px] text-muted md:text-sm",
               "bg-[rgb(29_30_33_/10%)] transition-colors",
               "hover:bg-[rgb(29_30_33_/15%)]",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25"
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25",
             )}
           >
             Cancel
@@ -123,70 +126,94 @@ export function SupplierFormModal({
       <form
         id="supplier-form"
         className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-x-2 md:gap-y-3.5"
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(submit)}
       >
         <div className="min-w-0 md:col-start-1 md:row-start-1">
           <Input
             id="supplier-info"
-            name="suppliersInfo"
             autoComplete="off"
             placeholder="Suppliers Info"
-            value={form.suppliersInfo}
-            onChange={(e) => patch("suppliersInfo", e.target.value)}
+            {...register("name")}
           />
+          {errors.name ? (
+            <p className="mt-1 text-xs text-danger">{errors.name.message}</p>
+          ) : null}
         </div>
         <div className="min-w-0 md:col-start-2 md:row-start-1">
           <Input
             id="supplier-address"
-            name="address"
             autoComplete="street-address"
             placeholder="Address"
-            value={form.address}
-            onChange={(e) => patch("address", e.target.value)}
+            {...register("address")}
           />
+          {errors.address ? (
+            <p className="mt-1 text-xs text-danger">{errors.address.message}</p>
+          ) : null}
         </div>
         <div className="min-w-0 md:col-start-1 md:row-start-2">
           <Input
             id="supplier-company"
-            name="company"
             autoComplete="organization"
             placeholder="Company"
-            value={form.company}
-            onChange={(e) => patch("company", e.target.value)}
+            {...register("company")}
           />
+          {errors.company ? (
+            <p className="mt-1 text-xs text-danger">{errors.company.message}</p>
+          ) : null}
         </div>
         <div className="min-w-0 md:col-start-2 md:row-start-2">
-          <DateInput
-            id="supplier-delivery-date"
+          <Controller
             name="deliveryDate"
-            aria-label="Delivery date"
-            placeholder="Delivery date"
-            value={form.deliveryDate}
-            onChange={(v) => patch("deliveryDate", v)}
+            control={control}
+            render={({ field }) => (
+              <DateInput
+                id="supplier-delivery-date"
+                name={field.name}
+                aria-label="Delivery date"
+                placeholder="Delivery date"
+                value={field.value}
+                onChange={field.onChange}
+              />
+            )}
           />
+          {errors.deliveryDate ? (
+            <p className="mt-1 text-xs text-danger">
+              {errors.deliveryDate.message}
+            </p>
+          ) : null}
         </div>
         <div className="min-w-0 md:col-start-1 md:row-start-3">
           <Input
             id="supplier-amount"
-            name="amount"
             inputMode="decimal"
             autoComplete="off"
             placeholder="Ammount"
-            value={form.amount}
-            onChange={(e) => patch("amount", e.target.value)}
+            {...register("amount")}
           />
+          {errors.amount ? (
+            <p className="mt-1 text-xs text-danger">{errors.amount.message}</p>
+          ) : null}
         </div>
         <div className="min-w-0 md:col-start-2 md:row-start-3">
-          <Select
-            id="supplier-status"
+          <Controller
             name="status"
-            aria-label="Status"
-            options={SUPPLIER_STATUS_OPTIONS}
-            placeholder="Status"
-            triggerVariant="subtle"
-            value={form.status}
-            onValueChange={(v) => patch("status", v)}
+            control={control}
+            render={({ field }) => (
+              <Select
+                id="supplier-status"
+                name={field.name}
+                aria-label="Status"
+                options={SUPPLIER_STATUS_OPTIONS}
+                placeholder="Status"
+                triggerVariant="subtle"
+                value={field.value}
+                onValueChange={field.onChange}
+              />
+            )}
           />
+          {errors.status ? (
+            <p className="mt-1 text-xs text-danger">{errors.status.message}</p>
+          ) : null}
         </div>
       </form>
     </Modal>

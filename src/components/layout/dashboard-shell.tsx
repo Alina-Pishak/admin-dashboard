@@ -1,8 +1,10 @@
 "use client";
 
 import { LogOut, Menu, X } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { getUserInfoRequest, logoutUserRequest } from "@/lib/api";
+import { clearStoredToken, getStoredToken } from "@/lib/auth";
 import { IconButton } from "@/components/ui/icon-button";
 import { Logo } from "./logo";
 import { SidebarNav } from "./sidebar-nav";
@@ -24,6 +26,7 @@ export function DashboardShell({
   userEmail = "vendor@gmail.com",
 }: DashboardShellProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const breadcrumbCurrentResolved = useMemo(() => {
     const map: Record<string, string> = {
       "/": "Dashboard",
@@ -36,6 +39,7 @@ export function DashboardShell({
   }, [pathname, breadcrumbCurrent]);
 
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [resolvedUserEmail, setResolvedUserEmail] = useState(userEmail);
 
   useEffect(() => {
     if (!mobileNavOpen) return;
@@ -45,6 +49,35 @@ export function DashboardShell({
       document.body.style.overflow = prev;
     };
   }, [mobileNavOpen]);
+
+  useEffect(() => {
+    const token = getStoredToken();
+    if (!token) return;
+
+    getUserInfoRequest(token)
+      .then((user) => {
+        setResolvedUserEmail(user.email || userEmail);
+      })
+      .catch(() => {
+        setResolvedUserEmail(userEmail);
+      });
+  }, [userEmail]);
+
+  function handleLogout() {
+    void (async () => {
+      const token = getStoredToken();
+      if (token) {
+        try {
+          await logoutUserRequest(token);
+        } catch {
+          // мережева помилка — все одно виходимо локально
+        }
+      }
+      clearStoredToken();
+      router.push("/login");
+      router.refresh();
+    })();
+  }
 
   return (
     <div className="flex min-h-full bg-surface-page">
@@ -119,12 +152,17 @@ export function DashboardShell({
               <p className="truncate text-xs leading-[18px] text-muted">
                 <span>{breadcrumbCurrentResolved}</span>
                 <span className="mx-2 text-muted">|</span>
-                <span>{userEmail}</span>
+                <span>{resolvedUserEmail || userEmail}</span>
               </p>
             </div>
           </div>
 
-          <IconButton variant="solid" className="shrink-0" aria-label="Вийти">
+          <IconButton
+            variant="solid"
+            className="shrink-0"
+            aria-label="Вийти"
+            onClick={handleLogout}
+          >
             <LogOut className="size-5" strokeWidth={1.75} />
           </IconButton>
         </header>

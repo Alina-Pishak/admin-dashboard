@@ -15,6 +15,7 @@ import type { ReactNode } from "react";
 import { useCallback, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { TableLoadingOverlay } from "@/components/ui/table-loading-overlay";
 import { cn } from "@/lib/utils";
 
 export type DataTableVariant = "full" | "embedded";
@@ -43,6 +44,8 @@ export type DataTableProps<TData> = {
   meta?: unknown;
   emptyMessage?: string;
   className?: string;
+  /** Оверлей зі спінером поверх картки таблиці */
+  isLoading?: boolean;
 };
 
 export function DataTable<TData>({
@@ -59,6 +62,7 @@ export function DataTable<TData>({
   meta,
   emptyMessage = "Немає даних",
   className,
+  isLoading = false,
 }: DataTableProps<TData>) {
   const [globalFilter, setGlobalFilter] = useState("");
   /** Чернетка в полі; у таблицю потрапляє лише після Filter / Enter */
@@ -214,18 +218,27 @@ export function DataTable<TData>({
         </div>
       )}
 
-      <div className="overflow-hidden rounded-lg border border-border-subtle bg-surface-card shadow-[0_-1px_5px_0_rgba(71,71,71,0.05)]">
+      <div className="relative overflow-hidden rounded-lg border border-border-subtle bg-surface-card shadow-[0_-1px_5px_0_rgba(71,71,71,0.05)]">
+        {isLoading ? <TableLoadingOverlay /> : null}
         <div
           className={cn(
             "flex items-center bg-surface-mint px-[13px] py-3 md:min-h-16 md:px-5",
-            "min-h-12 md:py-0"
+            "min-h-12 md:py-0",
+            isLoading && "pointer-events-none opacity-60",
           )}
         >
           <h2 className="text-base font-semibold leading-5 text-foreground md:text-lg md:leading-6">
             {title}
           </h2>
         </div>
-        <div className="overflow-x-auto">{tableInner}</div>
+        <div
+          className={cn(
+            "overflow-x-auto",
+            isLoading && "pointer-events-none opacity-60",
+          )}
+        >
+          {tableInner}
+        </div>
       </div>
 
       {isFull && pageCount > 1 && (

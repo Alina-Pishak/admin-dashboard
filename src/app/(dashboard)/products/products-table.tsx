@@ -2,13 +2,23 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import { Pencil, Plus, Trash2 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DataTable } from "@/components/ui/data-table";
+import { DeleteProductConfirmModal } from "@/components/products/delete-product-confirm-modal";
 import {
   PRODUCT_CATEGORY_OPTIONS,
   ProductFormModal,
   type ProductFormValues,
 } from "@/components/products/product-form-modal";
+import {
+  createProductRequest,
+  deleteProductRequest,
+  getProductsRequest,
+  mapProductsToRows,
+  productFormToPayload,
+  updateProductRequest,
+} from "@/lib/api";
+import { getStoredToken } from "@/lib/auth";
 import { demoProducts } from "@/lib/demo-table-data";
 import { cn } from "@/lib/utils";
 import type { ProductRow } from "@/types/table";
@@ -21,7 +31,7 @@ function categoryLabel(value: string) {
 
 function rowToFormValues(row: ProductRow): Partial<ProductFormValues> {
   return {
-    productInfo: row.productInfo,
+    name: row.name,
     category: row.category,
     stock: row.stock,
     suppliers: row.suppliers,
@@ -31,7 +41,7 @@ function rowToFormValues(row: ProductRow): Partial<ProductFormValues> {
 
 const columns: ColumnDef<ProductRow>[] = [
   {
-    accessorKey: "productInfo",
+    accessorKey: "name",
     header: "Product Info",
     cell: ({ getValue }) => (
       <span className="whitespace-nowrap">{String(getValue())}</span>
@@ -50,7 +60,9 @@ const columns: ColumnDef<ProductRow>[] = [
     accessorKey: "stock",
     header: "Stock",
     cell: ({ getValue }) => (
-      <span className="whitespace-nowrap tabular-nums">{String(getValue())}</span>
+      <span className="whitespace-nowrap tabular-nums">
+        {String(getValue())}
+      </span>
     ),
   },
   {
@@ -64,7 +76,9 @@ const columns: ColumnDef<ProductRow>[] = [
     accessorKey: "price",
     header: "Price",
     cell: ({ getValue }) => (
-      <span className="whitespace-nowrap tabular-nums">{String(getValue())}</span>
+      <span className="whitespace-nowrap tabular-nums">
+        {String(getValue())}
+      </span>
     ),
   },
   {
@@ -83,9 +97,9 @@ const columns: ColumnDef<ProductRow>[] = [
             type="button"
             className={cn(
               "inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-primary/50 p-2 text-primary transition-colors",
-              "hover:bg-primary-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
+              "hover:bg-primary-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35",
             )}
-            aria-label={`Редагувати ${row.original.productInfo}`}
+            aria-label={`Редагувати ${row.original.name}`}
             onClick={() => meta?.onEdit(row.original)}
           >
             <Pencil className="size-4" strokeWidth={1.75} aria-hidden />
@@ -94,9 +108,9 @@ const columns: ColumnDef<ProductRow>[] = [
             type="button"
             className={cn(
               "inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-danger/50 p-2 text-danger transition-colors",
-              "hover:bg-danger-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger/30"
+              "hover:bg-danger-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger/30",
             )}
-            aria-label={`Видалити ${row.original.productInfo}`}
+            aria-label={`Видалити ${row.original.name}`}
             onClick={() => meta?.onDelete(row.original)}
           >
             <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
@@ -108,15 +122,21 @@ const columns: ColumnDef<ProductRow>[] = [
 ];
 
 export function ProductsTable() {
+  const [rows, setRows] = useState(demoProducts);
+  const [loading, setLoading] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<ProductRow | null>(null);
+  const [deletePending, setDeletePending] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState<"add" | "edit">("add");
   const [formKey, setFormKey] = useState(0);
+  const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [editDefaults, setEditDefaults] = useState<
     Partial<ProductFormValues> | undefined
   >(undefined);
 
   const openAdd = useCallback(() => {
     setFormMode("add");
+    setEditingRowId(null);
     setEditDefaults(undefined);
     setFormKey((k) => k + 1);
     setFormOpen(true);
@@ -124,32 +144,99 @@ export function ProductsTable() {
 
   const openEdit = useCallback((row: ProductRow) => {
     setFormMode("edit");
+    setEditingRowId(row.id);
     setEditDefaults(rowToFormValues(row));
     setFormKey((k) => k + 1);
     setFormOpen(true);
   }, []);
 
-  const onDelete = useCallback((_row: ProductRow) => {
-    // TODO: підтвердження + API
+  const loadProducts = useCallback(async (authToken: string) => {
+    const products = await getProductsRequest(authToken);
+    setRows(mapProductsToRows(products));
   }, []);
+
+  const requestDelete = useCallback((row: ProductRow) => {
+    setDeleteTarget(row);
+  }, []);
+
+  const confirmDelete = useCallback(async () => {
+    if (!deleteTarget) return;
+    const token = getStoredToken();
+    if (!token) return;
+    setDeletePending(true);
+    try {
+      await deleteProductRequest(token, deleteTarget.id);
+      setRows((prev) => prev.filter((item) => item.id !== deleteTarget.id));
+      setDeleteTarget(null);
+    } finally {
+      setDeletePending(false);
+    }
+  }, [deleteTarget]);
+
+  const handleFormSubmit = useCallback(
+    async (values: ProductFormValues) => {
+      const token = getStoredToken();
+      if (!token) {
+        throw new Error("Unauthorized");
+      }
+      const payload = productFormToPayload(values);
+      setLoading(true);
+      try {
+        if (formMode === "add") {
+          await createProductRequest(token, payload);
+        } else if (editingRowId) {
+          await updateProductRequest(token, editingRowId, payload);
+        } else {
+          throw new Error("Missing editing item id");
+        }
+        await loadProducts(token);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [editingRowId, formMode, loadProducts],
+  );
+
+  useEffect(() => {
+    const authToken = getStoredToken();
+    if (!authToken) return;
+
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      setLoading(true);
+      loadProducts(authToken)
+        .catch(() => {
+          if (!cancelled) setRows(demoProducts);
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
+    }, 0);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [loadProducts]);
 
   return (
     <>
       <DataTable<ProductRow>
         title="All products"
         columns={columns}
-        data={demoProducts}
+        data={rows}
+        isLoading={loading}
         variant="full"
         searchPlaceholder="Product Name"
         searchAriaLabel="Search by product name"
         pageSize={5}
         getGlobalFilterText={(row) => {
           const cat = categoryLabel(row.category);
-          return `${row.productInfo} ${cat} ${row.suppliers} ${row.stock} ${row.price}`;
+          return `${row.name} ${cat} ${row.suppliers} ${row.stock} ${row.price}`;
         }}
         meta={{
           onEdit: openEdit,
-          onDelete,
+          onDelete: requestDelete,
         }}
         toolbarEnd={
           <button
@@ -172,6 +259,16 @@ export function ProductsTable() {
         onClose={() => setFormOpen(false)}
         mode={formMode}
         defaultValues={formMode === "edit" ? editDefaults : undefined}
+        onSubmit={handleFormSubmit}
+      />
+      <DeleteProductConfirmModal
+        open={deleteTarget != null}
+        productName={deleteTarget?.name ?? ""}
+        pending={deletePending}
+        onClose={() => {
+          if (!deletePending) setDeleteTarget(null);
+        }}
+        onConfirm={confirmDelete}
       />
     </>
   );

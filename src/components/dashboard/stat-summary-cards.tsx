@@ -2,34 +2,42 @@ import Link from "next/link";
 import { Coins, Package, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const STATS = [
-  {
-    href: "/products",
-    label: "All products",
-    value: "8,430",
-    icon: Coins,
-    highlight: true,
-  },
-  {
-    href: "/suppliers",
-    label: "All suppliers",
-    value: "211",
-    icon: Package,
-    highlight: false,
-  },
-  {
-    href: "/customers",
-    label: "All customers",
-    value: "140",
-    icon: Users,
-    highlight: false,
-  },
-] as const;
+type StatSummaryCardsProps = {
+  summary?: {
+    products: number;
+    suppliers: number;
+    clients: number;
+  };
+};
 
-export function StatSummaryCards() {
+export function StatSummaryCards({ summary }: StatSummaryCardsProps) {
+  const stats = [
+    {
+      href: "/products",
+      label: "All products",
+      value: String(summary?.products ?? 8430),
+      icon: Coins,
+      highlight: true,
+    },
+    {
+      href: "/suppliers",
+      label: "All suppliers",
+      value: String(summary?.suppliers ?? 211),
+      icon: Package,
+      highlight: false,
+    },
+    {
+      href: "/customers",
+      label: "All customers",
+      value: String(summary?.clients ?? 140),
+      icon: Users,
+      highlight: false,
+    },
+  ] as const;
+
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-      {STATS.map(({ href, label, value, icon: Icon, highlight }) => (
+      {stats.map(({ href, label, value, icon: Icon, highlight }) => (
         <Link
           key={href}
           href={href}

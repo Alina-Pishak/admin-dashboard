@@ -44,12 +44,18 @@ const columns: ColumnDef<CustomerRow>[] = [
   },
 ];
 
-export function RecentCustomersTable() {
+type RecentCustomersTableProps = {
+  data?: CustomerRow[];
+};
+
+export function RecentCustomersTable({
+  data = demoCustomers.slice(0, 5),
+}: RecentCustomersTableProps) {
   return (
     <DataTable
       title="Recent Customers"
       columns={columns}
-      data={demoCustomers}
+      data={data}
       variant="embedded"
     />
   );

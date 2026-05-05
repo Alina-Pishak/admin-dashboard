@@ -26,3 +26,4 @@ export {
   type SelectProps,
   type SelectTriggerVariant,
 } from "./select";
+export { TableLoadingOverlay } from "./table-loading-overlay";

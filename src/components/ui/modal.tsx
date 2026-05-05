@@ -16,6 +16,8 @@ export type ModalProps = {
   footer?: ReactNode;
   /** Закриття по кліку на затемнення (за замовчуванням увімкнено) */
   closeOnBackdropClick?: boolean;
+  /** Якщо true — не закривати по Escape / backdrop / хрестику */
+  closeDisabled?: boolean;
   className?: string;
   /** Додаткові класи для панелі (ширина, max-height) */
   panelClassName?: string;
@@ -33,6 +35,7 @@ export function Modal({
   children,
   footer,
   closeOnBackdropClick = true,
+  closeDisabled = false,
   className,
   panelClassName,
 }: ModalProps) {
@@ -52,14 +55,14 @@ export function Modal({
   useEffect(() => {
     if (!open) return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === "Escape" && !closeDisabled) {
         e.preventDefault();
         onClose();
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open, onClose]);
+  }, [open, onClose, closeDisabled]);
 
   useEffect(() => {
     if (!open) return;
@@ -81,7 +84,7 @@ export function Modal({
         className="absolute inset-0 bg-[rgb(29_30_33_/45%)]"
         aria-hidden
         onPointerDown={() => {
-          if (closeOnBackdropClick) onClose();
+          if (closeOnBackdropClick && !closeDisabled) onClose();
         }}
       />
       <div className="pointer-events-none fixed inset-0 flex items-center justify-center p-4 sm:p-6">
@@ -109,11 +112,16 @@ export function Modal({
             </h2>
             <button
               type="button"
-              onClick={onClose}
+              onClick={() => {
+                if (!closeDisabled) onClose();
+              }}
+              disabled={closeDisabled}
               className={cn(
                 "-m-1.5 shrink-0 rounded-full p-1.5 text-foreground transition-colors",
                 "hover:bg-primary-muted hover:text-primary",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35",
+                closeDisabled &&
+                  "pointer-events-none opacity-40 hover:bg-transparent hover:text-foreground",
               )}
               aria-label="Закрити"
             >

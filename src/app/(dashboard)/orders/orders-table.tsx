@@ -2,6 +2,9 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { getOrdersRequest, mapOrdersToRows } from "@/lib/api";
+import { getStoredToken } from "@/lib/auth";
 import { Badge } from "@/components/ui/badge";
 import { DataTable } from "@/components/ui/data-table";
 import { demoOrders } from "@/lib/demo-table-data";
@@ -74,11 +77,39 @@ const columns: ColumnDef<OrderRow>[] = [
 ];
 
 export function OrdersTable() {
+  const [rows, setRows] = useState(demoOrders);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const token = getStoredToken();
+    if (!token) return;
+
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      setLoading(true);
+      getOrdersRequest(token)
+        .then((orders) => {
+          if (!cancelled) setRows(mapOrdersToRows(orders));
+        })
+        .catch(() => {
+          if (!cancelled) setRows(demoOrders);
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
+    }, 0);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, []);
+
   return (
     <DataTable<OrderRow>
       title="All orders"
       columns={columns}
-      data={demoOrders}
+      data={rows}
+      isLoading={loading}
       variant="full"
       searchPlaceholder="User Name"
       pageSize={5}

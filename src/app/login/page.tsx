@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { LoginForm } from "./login-form";
 import { Logo } from "@/components/layout/logo";
@@ -8,6 +9,11 @@ import { cn } from "@/lib/utils";
  * [планшет 92:1412](https://www.figma.com/design/RRrBndFgQLZ96QH3awLwCI/Admin-dashboard--Copy-?node-id=92-1412),
  * [мобайл 92:3297](https://www.figma.com/design/RRrBndFgQLZ96QH3awLwCI/Admin-dashboard--Copy-?node-id=92-3297).
  */
+export const metadata: Metadata = {
+  title: "Вхід",
+  description: "Увійдіть до панелі керування E-Pharmacy.",
+};
+
 export default function LoginPage() {
   return (
     <div className="relative min-h-full flex-1 overflow-hidden bg-surface-page">

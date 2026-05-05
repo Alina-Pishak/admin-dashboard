@@ -58,7 +58,11 @@ function AmountCell({ row }: { row: LedgerRow }) {
   );
 }
 
-export function IncomeExpensesCard() {
+type IncomeExpensesCardProps = {
+  rows?: LedgerRow[];
+};
+
+export function IncomeExpensesCard({ rows = demoLedgerToday }: IncomeExpensesCardProps) {
   return (
     <div className="overflow-hidden rounded-lg border border-border-subtle bg-surface-card shadow-[0_-1px_5px_0_rgba(71,71,71,0.05)]">
       <div
@@ -75,7 +79,7 @@ export function IncomeExpensesCard() {
         <p className="text-sm font-medium text-muted">Today</p>
       </div>
       <div className="divide-y divide-border-subtle px-[13px] md:px-5">
-        {demoLedgerToday.map((row) => (
+        {rows.map((row) => (
           <div
             key={row.id}
             className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4"

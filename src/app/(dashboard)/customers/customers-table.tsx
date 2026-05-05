@@ -2,17 +2,28 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { parseIsoLocal } from "@/components/ui";
+import { getCustomersRequest, mapCustomersToRows } from "@/lib/api";
+import { getStoredToken } from "@/lib/auth";
 import { demoCustomers } from "@/lib/demo-table-data";
 import type { CustomerRow } from "@/types/table";
 
 function formatRegisterDate(iso: string | undefined) {
   if (!iso) return "";
+  const nativeDate = new Date(iso);
+  if (!Number.isNaN(nativeDate.getTime())) {
+    return nativeDate.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  }
   const d = parseIsoLocal(iso);
   if (!d) return iso;
   return d.toLocaleDateString("en-US", {
-    month: "short",
+    month: "long",
     day: "numeric",
     year: "numeric",
   });
@@ -74,11 +85,45 @@ const columns: ColumnDef<CustomerRow>[] = [
 ];
 
 export function CustomersTable() {
+  const [rows, setRows] = useState(demoCustomers);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const token = getStoredToken();
+    if (!token) return;
+
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      setLoading(true);
+      getCustomersRequest(token)
+        .then((response) => {
+          if (!cancelled) {
+            setRows(
+              response.data?.length
+                ? mapCustomersToRows(response.data)
+                : demoCustomers,
+            );
+          }
+        })
+        .catch(() => {
+          if (!cancelled) setRows(demoCustomers);
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
+    }, 0);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, []);
+
   return (
     <DataTable<CustomerRow>
       title="Customers Data"
       columns={columns}
-      data={demoCustomers}
+      data={rows}
+      isLoading={loading}
       variant="full"
       searchPlaceholder="User Name"
       searchAriaLabel="Search by user name"

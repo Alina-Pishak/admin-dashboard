@@ -1,12 +1,20 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { Button, Input, Modal, Select, type SelectOption } from "@/components/ui";
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import {
+  Button,
+  Input,
+  Modal,
+  Select,
+  type SelectOption,
+} from "@/components/ui";
+import { productFormSchema } from "@/lib/validation";
 import { cn } from "@/lib/utils";
 
 /** Поля форми продукту — [Add / Edit product](https://www.figma.com/design/RRrBndFgQLZ96QH3awLwCI/Admin-dashboard--Copy-?node-id=92-804) */
 export type ProductFormValues = {
-  productInfo: string;
+  name: string;
   category: string;
   stock: string;
   suppliers: string;
@@ -22,7 +30,7 @@ export const PRODUCT_CATEGORY_OPTIONS: SelectOption[] = [
 ];
 
 const EMPTY: ProductFormValues = {
-  productInfo: "",
+  name: "",
   category: "",
   stock: "",
   suppliers: "",
@@ -54,7 +62,7 @@ export type ProductFormModalProps = {
   mode: ProductFormMode;
   /** Для режиму редагування — початкові значення полів */
   defaultValues?: Partial<ProductFormValues>;
-  onSubmit?: (values: ProductFormValues) => void;
+  onSubmit?: (values: ProductFormValues) => void | Promise<void>;
 };
 
 export function ProductFormModal({
@@ -64,17 +72,18 @@ export function ProductFormModal({
   defaultValues,
   onSubmit,
 }: ProductFormModalProps) {
-  const [form, setForm] = useState<ProductFormValues>(() =>
-    mergeDefaults(defaultValues)
-  );
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ProductFormValues>({
+    resolver: yupResolver(productFormSchema),
+    defaultValues: mergeDefaults(defaultValues),
+  });
 
-  const patch = useCallback((key: keyof ProductFormValues, value: string) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
-  }, []);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit?.(form);
+  const submit = async (values: ProductFormValues) => {
+    await onSubmit?.(values);
     onClose();
   };
 
@@ -101,7 +110,7 @@ export function ProductFormModal({
               "text-xs font-medium leading-[18px] text-muted md:text-sm",
               "bg-[rgb(29_30_33_/10%)] transition-colors",
               "hover:bg-[rgb(29_30_33_/15%)]",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25"
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25",
             )}
           >
             Cancel
@@ -112,61 +121,78 @@ export function ProductFormModal({
       <form
         id="product-form"
         className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-x-2 md:gap-y-3.5"
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(submit)}
       >
         <div className="order-1 min-w-0 md:col-start-1 md:row-start-1">
           <Input
             id="product-info"
-            name="productInfo"
             autoComplete="off"
             placeholder="Product Info"
-            value={form.productInfo}
-            onChange={(e) => patch("productInfo", e.target.value)}
+            {...register("name")}
           />
+          {errors.name ? (
+            <p className="mt-1 text-xs text-danger">{errors.name.message}</p>
+          ) : null}
         </div>
         <div className="order-2 min-w-0 md:col-start-2 md:row-start-1">
-          <Select
-            id="product-category"
+          <Controller
             name="category"
-            aria-label="Category"
-            options={PRODUCT_CATEGORY_OPTIONS}
-            placeholder="Category"
-            triggerVariant="subtle"
-            value={form.category}
-            onValueChange={(v) => patch("category", v)}
+            control={control}
+            render={({ field }) => (
+              <Select
+                id="product-category"
+                name={field.name}
+                aria-label="Category"
+                options={PRODUCT_CATEGORY_OPTIONS}
+                placeholder="Category"
+                triggerVariant="subtle"
+                value={field.value}
+                onValueChange={field.onChange}
+              />
+            )}
           />
+          {errors.category ? (
+            <p className="mt-1 text-xs text-danger">
+              {errors.category.message}
+            </p>
+          ) : null}
         </div>
         <div className="order-4 min-w-0 md:col-start-1 md:row-start-2">
           <Input
             id="product-stock"
-            name="stock"
             inputMode="numeric"
             autoComplete="off"
             placeholder="Stock"
-            value={form.stock}
-            onChange={(e) => patch("stock", e.target.value)}
+            {...register("stock")}
           />
+          {errors.stock ? (
+            <p className="mt-1 text-xs text-danger">{errors.stock.message}</p>
+          ) : null}
         </div>
         <div className="order-3 min-w-0 md:col-start-2 md:row-start-2">
           <Input
             id="product-suppliers"
-            name="suppliers"
             autoComplete="off"
             placeholder="Suppliers"
-            value={form.suppliers}
-            onChange={(e) => patch("suppliers", e.target.value)}
+            {...register("suppliers")}
           />
+          {errors.suppliers ? (
+            <p className="mt-1 text-xs text-danger">
+              {errors.suppliers.message}
+            </p>
+          ) : null}
         </div>
         <div className="order-5 min-w-0 md:col-start-1 md:row-start-3">
           <Input
             id="product-price"
-            name="price"
             inputMode="decimal"
             autoComplete="off"
             placeholder="Price"
-            value={form.price}
-            onChange={(e) => patch("price", e.target.value)}
+            {...register("price")}
           />
+          {errors.price ? (
+            <p className="mt-1 text-xs text-danger">{errors.price.message}</p>
+          ) : null}
         </div>
       </form>
     </Modal>
